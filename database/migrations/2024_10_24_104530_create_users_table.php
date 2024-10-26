@@ -10,9 +10,11 @@ return new class extends Migration {
         Schema::create('users', function (Blueprint $table) {
             $table->id();
             $table->string('name');
+            $table->string('employeeId')->unique(); // New field
+            $table->string('department'); // New field
             $table->string('email')->unique();
             $table->string('password');
-            $table->enum('usertype', ['admin', 'employee']);
+            $table->string('usertype');
             $table->time('start_time')->nullable();
             $table->time('end_time')->nullable();
             $table->json('working_days')->nullable();

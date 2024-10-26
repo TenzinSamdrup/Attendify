@@ -22,12 +22,12 @@
 </head>
 <body>
     <div class="container">
-        <h2>Welcome to Our System,</h2>
+        <h2>Welcome to Attentify,</h2>
         
         <p>Your account has been created successfully. Here are your login credentials:</p>
         
         <div class="credentials">
-            <p><strong>Email:</strong> {{$email}}</p>
+            <p><strong>EmpID:</strong> {{$empID}}</p>
             <p><strong>Password:</strong>{{$password}}</p>
         </div>
 
@@ -35,7 +35,7 @@
         
         <p>If you didn't request this account, please contact our support team immediately.</p>
         
-        <p>Best regards,<br>Your System Team</p>
+        <p>Best regards,<br>Attentify</p>
     </div>
 </body>
 </html>

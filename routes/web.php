@@ -14,7 +14,11 @@ Route::middleware('auth')->group(function () {
 
     Route::get('/employeeDashboard', function () {
         return view('employee.empDashboard');
-    })->name('employee.dashboard'); // Route name defined here
+    })->name('employee.dashboard'); // Route name defined here\
+
+    Route::get('/employeeDashboard/history', function () {
+        return view('employee.history');
+    })->name('employee.history');
 
     // Logout route
     Route::post('/logout', function () {

@@ -1,5 +1,7 @@
-<form wire:submit.prevent="register" class="bg-white p-4 rounded shadow-sm">
+<div class=" container d-flex justify-content-center align-items-center">
+<form wire:submit.prevent="register" class="bg-white rounded" >
     <!-- Name Input -->
+    <h2 class="mb-3" style="color:#003366">Register Employee</h2>
     <div class="mb-3">
         <label for="name" class="form-label">Name:</label>
         <input type="text" id="name" wire:model="name" required 
@@ -20,7 +22,27 @@
             <div class="invalid-feedback">{{ $message }}</div>
         @enderror
     </div>
+    <!-- Employee ID Input -->
+    <div class="mb-3">
+        <label for="employeeId" class="form-label">Employee ID:</label>
+        <input type="text" id="employeeId" wire:model="employeeId" required 
+               class="form-control @error('employeeId') is-invalid @enderror" 
+               placeholder="Enter employee ID">
+        @error('employeeId')
+            <div class="invalid-feedback">{{ $message }}</div>
+        @enderror
+    </div>
 
+    <!-- Department Name Input -->
+    <div class="mb-3">
+        <label for="department" class="form-label">Department Name:</label>
+        <input type="text" id="department" wire:model="department" required 
+               class="form-control @error('department') is-invalid @enderror" 
+               placeholder="Enter department name">
+        @error('department')
+            <div class="invalid-feedback">{{ $message }}</div>
+        @enderror
+    </div>
     <!-- Time Select Inputs -->
     <div class="mb-3">
         <label for="start_time" class="form-label">Start Time:</label>
@@ -60,14 +82,12 @@
     </div>
 
     <!-- Submit Button -->
-    <button type="submit" class="btn btn-primary w-100 mt-3">
-        Register Employee
-    </button>
-
-    <!-- Loading Indicator -->
-    <div wire:loading wire:target="register" class="text-primary mt-2 text-center">
-        Registering employee... Please wait.
-    </div>
+     <div class="w-100 text-center">
+    <button type="submit" class="btn  w-50 mt-3" style="background-color:#003366">
+            <span wire:loading.remove wire:target="register" class="text-white">Register Employee</span>
+            <span wire:loading wire:target="register" class="text-white">Registering employee... Please wait</span>
+        </button>
+        </div>
 
     <!-- Success and Error Messages -->
     @if (session()->has('success'))
@@ -82,3 +102,4 @@
         </div>
     @endif
 </form>
+</div>

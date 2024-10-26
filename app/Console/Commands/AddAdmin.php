@@ -14,18 +14,22 @@ class AddAdmin extends Command
     public function handle()
     {
         // Admin user details
-        $email = 'admin@admin.com';
+        $email = 'tenzinsamdrup6@gmail.com.com';
         $password = 'password123'; // Change this to a secure password
         $usertype = 'admin'; // Assuming you want to set this as an admin
         $name = 'Admin User'; // The name for the admin user
+        $employeeId = 'EMP001'; // Example employee ID (you can change it)
+        $department = 'Administration'; // Example department name
 
         try {
             // Create the admin user
             User::create([
-                'name' => $name, // Include the name
+                'name' => $name,
                 'email' => $email,
                 'password' => Hash::make($password),
                 'usertype' => $usertype,
+                'employeeId' => $employeeId, // Include the employeeId
+                'department' => $department,   // Include the department
                 'created_at' => now(),
                 'updated_at' => now(),
             ]);

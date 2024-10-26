@@ -4,74 +4,107 @@ namespace App\Livewire;
 
 use Livewire\Component;
 use App\Models\Attendance;
-use Carbon\Carbon;
 use Illuminate\Support\Facades\Auth;
 
 class Check extends Component
 {
-    public $isCheckedIn = false;
-    public $checkOutTime;
-    public $canCheckOut = false;
-    public $statusMessage;
-    public $scheduledStartTime = '09:00';
+    public $attendance;
+    public $currentDate;
+    public $currentTime;
+    public $message = '';
 
     public function mount()
     {
-        $this->loadAttendanceStatus();
+        $this->refreshCurrentTime();
+        $this->attendance = $this->getTodayAttendance();
     }
 
-    public function loadAttendanceStatus()
+    public function render()
     {
-        $attendance = Attendance::where('user_id', Auth::id())
-            ->whereDate('created_at', Carbon::today())
-            ->first();
+        $this->refreshCurrentTime();
 
-        if ($attendance) {
-            $this->isCheckedIn = true;
-            $this->checkOutTime = Carbon::parse($attendance->check_in)->addHours(8);
-            $this->canCheckOut = Carbon::now()->greaterThanOrEqualTo($this->checkOutTime);
+        $user = Auth::user();
+        $today = strtolower(date('l')); // Current day of the week
+        $workingDays = json_decode($user->working_days, true) ?? [];
+        $isWorkingDay = in_array($today, array_map('strtolower', $workingDays));
+
+        return view('livewire.check', [
+            'isWorkingDay' => $isWorkingDay,
+            'startTime' => $user->start_time,
+            'endTime' => $user->end_time,
+            'currentStatus' => $this->getCurrentStatus(),
+            'name' => $user->name,
+            'employeeId' => $user->employeeId,
+            'department' => $user->department,
+            'currentTime' => $this->currentTime,
+        ]);
+    }
+
+    private function refreshCurrentTime()
+    {
+        date_default_timezone_set('Asia/Thimphu');
+        $currentDateTime = new \DateTime();
+        $this->currentDate = $currentDateTime->format('Y-m-d');
+        $this->currentTime = $currentDateTime->format('H:i:s');
+    }
+
+    private function getTodayAttendance()
+    {
+        date_default_timezone_set('Asia/Thimphu');
+        $today = date('Y-m-d');
+        return Attendance::where('user_id', Auth::id())
+            ->whereDate('check_in', $today)
+            ->first();
+    }
+
+    private function getCurrentStatus()
+    {
+        if (!$this->attendance) {
+            return 'Not Checked In';
         }
+        return $this->attendance->check_out ? 'Checked Out' : 'Checked In';
     }
 
     public function checkIn()
     {
-        $checkInTime = Carbon::now();
-        $scheduledTime = Carbon::parse(today()->format('Y-m-d') . ' ' . $this->scheduledStartTime);
+        $user = Auth::user();
+        date_default_timezone_set('Asia/Thimphu');
+        $currentDateTime = new \DateTime();
+        $startTime = new \DateTime($currentDateTime->format('Y-m-d') . ' ' . $user->start_time);
+        $status = $currentDateTime <= $startTime ? 'On Time' : 'Late';
 
-        $this->statusMessage = $checkInTime->greaterThan($scheduledTime) ? 'Late' : 'On Time';
-
-        try {
-            Attendance::create([
-                'user_id' => Auth::id(),
-                'check_in' => $checkInTime,
-                'status' => $this->statusMessage,
+        // Record check-in
+        if (!$this->attendance) {
+            $this->attendance = Attendance::create([
+                'user_id' => $user->id,
+                'check_in' => $currentDateTime->format('Y-m-d H:i:s'),
+                'status' => $status,
             ]);
-
-            $this->isCheckedIn = true;
-            $this->checkOutTime = $checkInTime->addHours(8);
-            session()->flash('success', 'Checked in successfully.');
-        } catch (\Exception $e) {
-            session()->flash('error', 'Error recording attendance: ' . $e->getMessage());
+            $this->message = "Checked in successfully! Status: $status";
+        } else {
+            $this->message = 'You have already checked in today!';
         }
     }
 
     public function checkOut()
     {
-        $attendance = Attendance::where('user_id', Auth::id())
-            ->whereDate('created_at', Carbon::today())
-            ->first();
-
-        if ($attendance) {
-            $attendance->update(['check_out' => Carbon::now()]);
-            $this->isCheckedIn = false;
-            session()->flash('success', 'Checked out successfully.');
+        if (!$this->attendance) {
+            $this->message = 'No check-in record found for today!';
+            return;
         }
-    }
 
-    public function render()
-    {
-        $this->loadAttendanceStatus(); // Refresh status every time component renders
-        return view('livewire.check');
+        if ($this->attendance->check_out) {
+            $this->message = 'You have already checked out today!';
+            return;
+        }
+
+        date_default_timezone_set('Asia/Thimphu');
+        $currentDateTime = new \DateTime();
+
+        $this->attendance->update([
+            'check_out' => $currentDateTime->format('Y-m-d H:i:s'),
+        ]);
+
+        $this->message = 'Checked out successfully!';
     }
 }
-

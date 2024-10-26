@@ -1,6 +1,6 @@
-<div>
+<div  class="text-dark">
     @if (Auth::check())
-        <button wire:click="confirmLogout" class="btn btn-danger">Logout</button>
+        <a wire:click="confirmLogout" class="text-white" style="cursor: pointer;">Log Out</a>
 
         <!-- Modal -->
         <div class="modal fade @if($confirmingLogout) show @endif" style="display: @if($confirmingLogout) block @else none @endif;" tabindex="-1" role="dialog" aria-labelledby="logoutModalLabel" aria-hidden="@if(!$confirmingLogout) true @else false @endif">

@@ -123,4 +123,16 @@ return [
         'store' => env('APP_MAINTENANCE_STORE', 'database'),
     ],
 
+    'providers' => [
+        /*
+         * Laravel Framework Service Providers...
+         */
+        // Add your service providers here
+        Barryvdh\DomPDF\ServiceProvider::class,
+    ],
+
+    'aliases' => [
+        // Add your aliases here
+        'PDF' => Barryvdh\DomPDF\Facade::class,
+    ],
 ];

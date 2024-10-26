@@ -1,34 +1,42 @@
-<div class="col-md-6" wire:poll.5s> <!-- Poll every seconds -->
-    <div class="card text-center">
-        <div class="card-header">
-            Check In / Check Out
+<div class="container mt-5">
+    <div class="bg-white shadow rounded-lg p-4">
+        <h2 class="text-xl font-semibold mb-4">Attendance Information</h2>
+        
+        <div class="mb-4">
+            <h3 class="font-semibold">Working Days:</h3>
+            <ul class="list-group list-group-flush">
+                @foreach (json_decode(Auth::user()->working_days, true) as $day)
+                    <li class="list-group-item">{{ ucfirst($day) }}</li>
+                @endforeach
+            </ul>
         </div>
-        <div class="card-body">
-            @if (session()->has('success'))
-                <div class="alert alert-success">{{ session('success') }}</div>
-            @endif
+        
+        <div class="mb-4">
+            <h3 class="font-semibold">Working Hours:</h3>
+            <p class="lead">{{ $startTime }} to {{ $endTime }}</p>
+        </div>
 
-            @if (session()->has('error'))
-                <div class="alert alert-danger">{{ session('error') }}</div>
-            @endif
+        @if ($message)
+            <div class="mb-4 p-3 alert alert-success">{{ $message }}</div>
+        @endif
 
-            @if (!$isCheckedIn)
-                <button class="btn btn-success mb-2" wire:click="checkIn">Check In</button>
-            @else
-                <p class="text-info">
-                    @if ($statusMessage)
-                        Status: <strong>{{ $statusMessage }}</strong>
-                    @endif
-                    <br />
-                    You can check out at {{ $checkOutTime->format('h:i A') }}.
-                </p>
-
-                @if ($canCheckOut)
-                    <button class="btn btn-danger" wire:click="checkOut">Check Out</button>
+        <div class="mb-4 text-center">
+            @if ($isWorkingDay)
+                @if (!$attendance)
+                    <button wire:click="checkIn" class="btn btn-success btn-md" aria-label="Check In">
+                        Check In
+                    </button>
                 @else
-                    <button class="btn btn-secondary" disabled>Check Out</button>
+                    <button wire:click="checkOut" class="btn btn-danger btn-md" aria-label="Check Out">
+                        Check Out
+                    </button>
                 @endif
+            @else
+                <div class="alert alert-secondary text-center">
+                    <strong>Notice:</strong> Today is not a working day.
+                </div>
             @endif
         </div>
+
     </div>
 </div>

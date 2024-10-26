@@ -57,7 +57,7 @@
             {{ $leaves->links() }} <!-- This will render the pagination links -->
         </div>
     @else
-        <div class="alert alert-danger  z-index-0">
+        <div class="alert alert-danger" style="z-index:1">
             No <strong>{{ ucfirst($status) }}</strong> leave requests found.
         </div>
     @endif

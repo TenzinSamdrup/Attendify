@@ -38,7 +38,7 @@
                             </div>
 
                             <!-- Submit -->
-                            <button type="submit" class="btn btn-success mt-3">Reset Password</button>
+                            <button type="submit" class="btn text-white  mt-3" style="background-color:#003366">Reset Password</button>
                         </form>
                     </div>
                 </div>

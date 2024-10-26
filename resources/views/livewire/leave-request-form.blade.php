@@ -27,7 +27,7 @@
                             <textarea class="form-control" id="purpose" wire:model="purpose" rows="3" required></textarea>
                         </div>
                         <div class="text-end">
-                            <button type="submit" class="btn btn-primary" wire:loading.attr="disabled">Submit Request</button>
+                            <button type="submit" class="btn text-white  mt-3" style="background-color:#003366" wire:loading.attr="disabled">Submit Request</button>
                         </div>
                     </form>
                 </div>

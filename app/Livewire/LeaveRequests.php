@@ -5,10 +5,13 @@ namespace App\Livewire;
 use Livewire\Component;
 use Livewire\WithPagination;
 use App\Models\Leave;
+use App\Models\User;
+use App\Mail\LeaveStatusNotification;
+use Illuminate\Support\Facades\Mail;
 
 class LeaveRequests extends Component
 {
-    use WithPagination; // Add pagination trait
+    use WithPagination;
 
     public $status = 'pending'; // Default status
 
@@ -17,7 +20,7 @@ class LeaveRequests extends Component
         // Retrieve leaves based on the selected status with pagination
         $leaves = Leave::where('status', $this->status)
             ->with('user')
-            ->paginate(10); // Change this number for desired entries per page
+            ->paginate(10);
 
         return view('livewire.leave-requests', [
             'leaves' => $leaves,
@@ -30,6 +33,15 @@ class LeaveRequests extends Component
         if ($leave) {
             $leave->status = $newStatus;
             $leave->save();
+
+            // Send email notification to the employee
+            $this->sendEmailNotification($leave);
         }
+    }
+
+    protected function sendEmailNotification($leave)
+    {
+        $employee = $leave->user; // Assumes Leave model has 'user' relationship
+        Mail::to($employee->email)->send(new LeaveStatusNotification($leave));
     }
 }

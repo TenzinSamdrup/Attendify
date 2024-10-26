@@ -14,6 +14,10 @@
                    wire:click="switchTab('dashboard')">Dashboard</a>
             </li>
             <li class="nav-item">
+                <a href="#" class="nav-link rounded p-3 {{ $activeTab === 'employee' ? 'active bg-white text-dark' : 'text-white' }}" 
+                   wire:click="switchTab('employee')">Employee List</a>
+            </li>
+            <li class="nav-item">
                 <a href="#" class="nav-link rounded p-3 {{ $activeTab === 'addEmployee' ? 'active bg-white text-dark' : 'text-white' }}" 
                    wire:click="switchTab('addEmployee')">Add Employee</a>
             </li>
@@ -22,6 +26,10 @@
                    wire:click="switchTab('leaveManagement')">
                    @livewire('admin-notification')
                 </a>
+            </li>
+            <li class="nav-item">
+                <a href="#" class="nav-link rounded p-3 {{ $activeTab === 'report' ? 'active bg-white text-dark' : 'text-white' }}" 
+                   wire:click="switchTab('report')">Report Generation</a>
             </li>
         </ul>
 
@@ -37,12 +45,14 @@
 
         @if ($activeTab === 'dashboard')
         <div class="container">
-        <div >
             @livewire('attendance-stats')
-        </div>    
-            @livewire('employee-list')
         </div>
 
+        @elseif ($activeTab === 'employee')
+        <div class="container">
+            @livewire('employee-list')
+        </div>
+        
         @elseif ($activeTab === 'addEmployee')
         <div class="container align-items-center">
             @livewire('register-form')
@@ -52,6 +62,10 @@
         <div class="container">
         <h2 class="mb-3" style="color:#003366">Leave Management</h2>
             @livewire('leave-requests')
+        </div>
+        @elseif ($activeTab === 'report')
+        <div class="container align-items-center">
+            @livewire('attendance-report')
         </div>
             
         @endif

@@ -5,44 +5,43 @@ namespace App\Livewire;
 use Livewire\Component;
 use App\Models\Attendance;
 use App\Models\Leave;
-use Illuminate\Support\Facades\Auth;
 
 class AttendanceStats extends Component
 {
-    public $onTimeCount;
-    public $lateCount;
-    public $onLeaveCount;
-    public $absentCount;
-    public $leavesToday;
+    public $attendanceStats = [];
+    public $attendanceRecords = [];
+    public $leaveRecords = [];
+    public $onLeaveCount = 0;
 
     public function mount()
     {
-        $today = date('Y-m-d');
-        $userId = Auth::id(); // Adjust if admin should see data for all employees.
+        $this->fetchAttendanceData();
+    }
 
-        // Count on-time attendance (adjust query as per your logic for on-time)
-        $this->onTimeCount = Attendance::whereDate('created_at', $today)
-            ->where('status', 'on-time')
-            ->count();
+    public function fetchAttendanceData()
+    {
+        $today = date('Y-m-d'); // Today's date
 
-        // Count late attendance
-        $this->lateCount = Attendance::whereDate('created_at', $today)
-            ->where('status', 'late')
-            ->count();
-
-        // Retrieve employees on leave today
-        $this->leavesToday = Leave::whereDate('start_date', '<=', $today)
-            ->whereDate('end_date', '>=', $today)
-            ->where('status', 'approved')
+        // Get today's attendance records
+        $this->attendanceRecords = Attendance::whereDate('check_in', $today)
             ->with('user')
             ->get();
 
-        $this->onLeaveCount = $this->leavesToday->count();
+        // Calculate attendance statistics
+        $this->attendanceStats = [
+            'on_time' => $this->attendanceRecords->where('status', 'On Time')->count(),
+            'late' => $this->attendanceRecords->where('status', 'Late')->count(),
+            'absent' => $this->attendanceRecords->where('status', 'Absent')->count(),
+        ];
 
-        // Count absent employees (those who have no attendance and are not on leave)
-        $this->absentCount = Attendance::whereDate('created_at', $today)
-            ->where('status', 'absent')
-            ->count(); 
+        // Get users on approved leave today
+        $this->leaveRecords = Leave::where('status', 'approved')
+            ->whereDate('start_date', '<=', $today)
+            ->whereDate('end_date', '>=', $today)
+            ->with('user')
+            ->get();
+
+        $this->onLeaveCount = $this->leaveRecords->count();
     }
 
     public function render()
